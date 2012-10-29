@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
+/*
+ * main.c
+ * Copyright (C) Romain Beuque 2010 <rbeuque@>
+ */
+
+
+#define VALEUR_MAX 1000
+
+int lireEntier() {
+	int entierLu;
+	int nbEntiersLus;
+	char videTampon;
+
+	do {
+		nbEntiersLus = scanf("%d", &entierLu);
+		if (nbEntiersLus != 1) {
+			printf("Erreur de format : veuillez saisir un entier.\n");
+
+		}
+		// vidage du reste du tampon (si plusieurs entiers ou saisie invalide)
+		do {
+			scanf("%c", &videTampon);
+		} while (videTampon != '\n');
+	} while (nbEntiersLus != 1);
+
+	return(entierLu);
+}
+
+int lireEntierEntreBornes (int borneMin, int borneMax) {
+	int noteLue, temp;
+	if (borneMin > borneMax) {
+		temp = borneMin;
+		borneMin = borneMax;
+		borneMax = temp;
+	}
+	do {
+		noteLue = lireEntier();
+		if (noteLue < borneMin || noteLue > borneMax) {
+			printf ("Veuillez entrer une valeur entre %d et %d \n", borneMin, borneMax);
+		}
+	}
+	while (noteLue < borneMin || noteLue > borneMax);
+	return noteLue;
+}
+
+int carre(int nombre)
+{
+	int nbCarre;
+	nbCarre = nombre*nombre;
+	return nbCarre;
+}
+
+int main()
+{
+	int valMax, compteur;
+	int table[VALEUR_MAX];
+	compteur = 0;
+	/*lecture nombre*/
+	printf("Tapez la valeur dont vous souhaitez récupérer le carré: (supérieure à 1)\n");
+	valMax = lireEntierEntreBornes(1,VALEUR_MAX-1);
+	for (compteur=0; compteur < valMax+2; compteur = compteur +1) {
+		/* initialisation compteur */
+		table[compteur] = 0;
+	}
+	for (compteur=valMax; compteur > 0; compteur = compteur - 1) {
+		/* affectation valeur */
+		table[compteur] = carre (compteur);
+	}
+	for (compteur=0; compteur <= valMax; compteur = compteur +1) {
+		/* affichage valeur 1 */
+		printf("%d^2 = %d\n", compteur, table[compteur]);
+	}
+
+	/* Question 3*/
+	printf("\nquest3");
+	for (compteur=valMax; compteur > 0; compteur = compteur -1) {
+		/* affectation nouvelle valeur case / quest3 */
+		table[compteur] = table[compteur] - table[compteur-1];
+	}
+	for (compteur=valMax; compteur > 0; compteur = compteur -1) {
+		/* affichage nouvelles valeur2 / quest3 */
+		printf("\nres[%d] : %d", compteur, table[compteur]);
+	}
+	return (0);
+}

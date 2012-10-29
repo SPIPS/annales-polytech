@@ -1,0 +1,187 @@
+#include <stdio.h>
+
+/*
+   Vous pouvez déclarer des symboles du préprocesseur (avec #define ...) ci-dessous
+*/
+
+#define ANNEE_MIN 1900
+#define ANNEE_MAX 2100
+#define OUI_ENTIER 1
+#define NON_ENTIER 0
+
+
+/*
+   Vous pouvez mettre les déclarations de vos fonctions immédiatement ci-dessous:
+   ainsi, vous n'aurez pas de fichier .h à ajouter
+*/
+
+int calculAge(int jour1, int mois1, int annee1, int jour2, int mois2, int annee2);
+int dateValide (int jour, int mois, int annee);
+int lireEntier();
+
+
+
+/*
+  Fonction représentant le programme principal
+
+ */
+
+int main() {
+    int nais_jour, nais_mois, nais_annee;
+    int jour, mois, annee;
+    int age;
+    int continuer;
+    printf("Ce programme calcul l'âge que vous aviez à une certaine date\n");
+    do
+    {
+        printf("Saisie de votre date de naissance:\n");
+        printf("...le jour:  ");
+        nais_jour = lireEntier();
+
+        printf("... le mois:   ");
+        nais_mois = lireEntier();
+
+        printf("... l'année:   ");
+        nais_annee = lireEntier();
+
+    } while (dateValide(nais_jour, nais_mois, nais_annee) == 0);
+
+    do
+    {
+        do
+        {
+            printf("Saisie de la date qui vous intéresse:\n");
+            printf("...le jour:  ");
+            jour = lireEntier();
+
+            printf("... le mois:   ");
+            mois = lireEntier();
+
+            printf("... l'année:   ");
+            annee = lireEntier();
+        } while (dateValide(jour, mois, annee) == 0);
+
+        if ( (annee < nais_annee) || ( (annee == nais_annee) && (mois < nais_mois) ) || ( (annee == nais_annee) && (mois == nais_mois) && (jour < nais_jour) ))
+        {
+            printf("vous n'étiez pas né!");
+        }
+        else
+        {
+            age = calculAge(jour, mois, annee, nais_jour, nais_mois, nais_annee);
+            printf("a cette date là, vous aviez %d ans", age);
+        }
+
+        do
+        {
+            printf("\nvoulez vous calculer un autre age? %d pour oui, %d pour non : ", OUI_ENTIER, NON_ENTIER);
+            continuer = lireEntier();
+        } while ( (continuer != OUI_ENTIER) && (continuer != NON_ENTIER));
+
+    } while (continuer == OUI_ENTIER);
+  return 0;
+}
+
+
+/*
+  Vous pouvez écrire vos fonctions ci-dessous
+*/
+
+int dateValide(int jour, int mois, int annee)
+{
+    int validite;
+
+    validite = 1;
+    if (mois >12 || mois <1 || jour <1 || annee < ANNEE_MIN || annee > ANNEE_MAX)
+    {
+        validite = 0;
+    }
+    else if ( mois == 1 || mois == 3 || mois == 5 || mois == 7 || mois ==8 || mois ==10 || mois ==12)
+    {
+        if (jour > 31)
+        {
+            validite = 0;
+        }
+
+    }
+    else if (mois == 4 || mois == 6 || mois == 9 || mois == 11)
+    {
+        if (jour > 30)
+        {
+            validite = 0;
+        }
+    }
+    else if (mois == 2)
+    {
+        if (((annee%4 == 0) && (annee%100 != 0)) || (annee%400 == 0))
+        {
+            /*bissextile */
+            if (jour > 29)
+            {
+                validite = 0;
+            }
+
+        }
+        else
+        {
+            /* non bissextile*/
+            if (jour > 28)
+            {
+                validite = 0;
+            }
+        }
+    }
+     return validite;
+}
+
+
+
+
+
+
+
+/*
+   Retourne un âge en nombre d'années entières à partir d'une date de naissance
+   (exprimée sous forme de 3 entiers) et d'une date particulière (sous forme de
+   3 entiers
+*/
+
+int calculAge(int jour1, int mois1, int annee1, int jour2, int mois2, int annee2) {
+	int resultat;
+
+	resultat = annee1 - annee2;
+	if ( (mois1 < mois2) || ( (mois1 = mois2) && (jour1 > jour2) ) ) {
+		/* la date de l'anniversaire pour cette année n'est
+                   pas atteinte */
+		resultat = resultat - 1;
+	}
+	return resultat;
+}
+
+
+/*
+  Retourne un entier lu au clavier avec vérification de la validité du format
+  (cependant, si plusieurs entiers sont lus, seul le premier est pris en compte)
+*/
+
+int lireEntier() {
+
+  int entierLu;
+  int nbEntiersLus;
+  char videTampon;
+
+  do {
+    nbEntiersLus = scanf("%d", &entierLu);
+    if (nbEntiersLus != 1) {
+      printf("Erreur de format: veuillez saisir un entier.\n");
+
+    }
+    /* vidage du reste du tampon (si plusieurs entiers ou saisie invalide) */
+    do {
+      scanf("%c", &videTampon);
+    } while (videTampon != '\n');
+
+  } while (nbEntiersLus != 1);
+
+  return entierLu;
+
+}

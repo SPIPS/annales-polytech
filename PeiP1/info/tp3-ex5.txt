@@ -1,0 +1,153 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <math.h>
+#include "main.h"
+
+#define RAYONTERRE 6366
+#define PI (3.141592653589793)
+#define CORRECT 'O'
+#define INCORRECT 'P'
+
+float lat[11];
+float longi[11];
+float convLat[11];
+float convLon[11];
+float distanceAB[11];
+char villes[11];
+
+void initialiserTable()
+{
+	/* initialisation d'un train - nombre wagons 0 - charge wagons - 0 */
+	int compteur;
+	for (compteur = 0; compteur < 12; compteur ++){
+		lat[compteur] = 0;
+	}
+	for (compteur = 0; compteur < 12; compteur ++){
+		longi[compteur] = 0;
+	}
+}
+
+float convertirDegreVersRad(float degre)
+{
+	return ( (degre*PI)/180 );
+}
+
+float distance(int A,int B)
+{
+	float calcul;
+	calcul = RAYONTERRE * acos(cos(convLat[A]) * cos(convLat[B]) * cos (convLon[B] - convLon[A]) + sin(convLat[A]) * sin(convLat[B]));
+	return calcul;
+}
+
+int lireEntier() {
+	int entierLu;
+	int nbEntiersLus;
+	char videTampon;
+
+	do {
+		nbEntiersLus = scanf("%d", &entierLu);
+		if (nbEntiersLus != 1) {
+			printf("Erreur de format : veuillez saisir un entier.\n");
+
+		}
+		// vidage du reste du tampon (si plusieurs entiers ou saisie invalide)
+		do {
+			scanf("%c", &videTampon);
+		} while (videTampon != '\n');
+	} while (nbEntiersLus != 1);
+
+	return(entierLu);
+}
+
+int lireEntierEntreBornes (int borneMin, int borneMax)
+{
+	int noteLue, temp;
+	if (borneMin > borneMax) {
+		temp = borneMin;
+		borneMin = borneMax;
+		borneMax = temp;
+	}
+	do {
+		noteLue = lireEntier();
+		if (noteLue < borneMin || noteLue > borneMax) {
+			printf ("Veuillez entrer une valeur entre %d et %d \n", borneMin, borneMax);
+		}
+	}
+	while (noteLue < borneMin || noteLue > borneMax);
+	return noteLue;
+}
+
+
+
+int main() {
+    int compteur, villePlusProche, etape;
+    int dejaVisite[11]; int trajet[11];
+    longi[0]=48.84; lat[0]=2.37; villes[0]='Paris';
+	longi[1]=47.78; lat[1]=3.57; villes[1]='Auxerre';
+	longi[2]=45.38; lat[2]=0.57; villes[2]='Bordeaux';
+	longi[3]=48.00; lat[3]=0.18; villes[3]='Le Mans';
+	longi[4]=50.42; lat[4]=2.82; villes[4]='Lens';
+	longi[5]=50.63; lat[5]=3.05; villes[5]='Lille';
+	longi[6]=47.73; lat[6]=-3.35; villes[6]='Lorient';
+	longi[7]=45.75; lat[7]=4.82; villes[7]='Lyon';
+	longi[8]=43.28; lat[8]=5.37; villes[8]='Marseille';
+	longi[9]=43.73; lat[9]=7.42; villes[9]='Monaco';
+	longi[10]=48.68; lat[10]=6.18; villes[10]='Nancy';
+
+	dejaVisite[0]=1; trajet[0]=0;
+	etape = 1;
+
+	// conversion des valeurs en radian
+	for (compteur =0; compteur < 12; compteur++) {
+        convLat[compteur] = convertirDegreVersRad(lat[compteur]);
+        convLon[compteur] = convertirDegreVersRad(longi[compteur]);
+    }
+
+    // initialisation des visites
+    for (compteur = 1; compteur < 11; compteur++)
+    {
+        dejaVisite[compteur] = 0;
+    }
+
+    //main
+	for (etape = 1; etape < 11; etape++)
+	{
+	    // initialisation de la ville la plus proche par défaut, en tenant compte des visites effectuées
+	    for (compteur = 0; compteur < 11; compteur++)
+	    {
+	        if (dejaVisite[compteur] == 0)
+	        {
+	            villePlusProche = compteur;
+	        }
+	    }
+
+	    // recherche de la distance la plus faible entre les villes non visitées
+	    for (compteur = 1; compteur < 11; compteur ++){
+            if (dejaVisite[compteur] == 0)
+            {
+                if (distance(trajet[etape-1], compteur) < distance(trajet[etape-1], villePlusProche))
+                {
+                    villePlusProche = compteur;
+                }
+            }
+        }
+
+        // affectation de la ville visitée, de la ville de l'étape, puis affichage
+        dejaVisite[villePlusProche] = 1;
+        trajet[etape] = villePlusProche;
+        printf("La ville la plus proche pour l'étape %d (entre %d et %d) est : %c - %d \n elle se trouve à %f km\n\n", etape, trajet[etape-1], trajet[etape], villes[trajet[etape]] , villePlusProche, distance(0, villePlusProche));
+	}
+
+    trajet[11] = 0;
+
+	// affichage du trajet
+	printf("Trajet final :\n");
+	for (compteur = 0; compteur < 12; compteur++)
+	{
+	    printf("[%d] - ", trajet[compteur]);
+	}
+
+
+	return (0);
+}

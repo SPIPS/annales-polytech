@@ -1,0 +1,11 @@
+#ifndef MAIN_H_INCLUDED
+#define MAIN_H_INCLUDED
+
+
+void initialiserTrain();
+float convertirDegreVersRad(float degre);
+float distance(int A,int B);
+int lireEntier();
+int lireEntierEntreBornes (int borneMin, int borneMax);
+
+#endif // MAIN_H_INCLUDED
